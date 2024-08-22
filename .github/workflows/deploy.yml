@@ -69,17 +69,17 @@ jobs:
               run: npx supabase db push
 
             - if: ${{ env.IS_SUPABASE_CONFIGURED && env.POSTMARK_WEBHOOK_USER }}
-              name: 📡 Push supabase postman webhook user secret
+              name: 📡 Push supabase postmark webhook user secret
               run: |
                   npx supabase secrets set POSTMARK_WEBHOOK_USER=${{ env.POSTMARK_WEBHOOK_USER }}
 
             - if: ${{ env.IS_SUPABASE_CONFIGURED && env.POSTMARK_WEBHOOK_PASSWORD }}
-              name: 📡 Push supabase postman webhook password secret
+              name: 📡 Push supabase postmark webhook password secret
               run: |
                   npx supabase secrets set POSTMARK_WEBHOOK_PASSWORD=${{ secrets.POSTMARK_WEBHOOK_PASSWORD }}
 
             - if: ${{ env.IS_SUPABASE_CONFIGURED && env.POSTMARK_WEBHOOK_AUTHORIZED_IPS }}
-              name: 📡 Push supabase whebhook authorized IPS secret
+              name: 📡 Push supabase postmark whebhook authorized IPS secret
               run: |
                   npx supabase secrets set POSTMARK_WEBHOOK_AUTHORIZED_IPS=${{ secrets.POSTMARK_WEBHOOK_AUTHORIZED_IPS }}
 
@@ -91,3 +91,27 @@ jobs:
               run: npx gh-pages --remote production -d dist -b ${{ vars.DEPLOY_BRANCH || 'gh-pages' }}
               env:
                   GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN || secrets.GITHUB_TOKEN }}
+
+            - if: ${{ !env.SUPABASE_ACCESS_TOKEN }}
+              name: 📡 Missing supabase access token
+              run: echo "::warning::SUPABASE_ACCESS_TOKEN secret is not set, Cannot deploy Supabase without it"
+
+            - if: ${{ !env.SUPABASE_DB_PASSWORD }}
+              name: 📡 Missing supabase db password
+              run: echo "::warning::SUPABASE_DB_PASSWORD secret is not set, Cannot deploy Supabase without it"
+
+            - if: ${{ !env.SUPABASE_PROJECT_ID }}
+              name: 📡 Missing supabase project id
+              run: echo "::warning::SUPABASE_PROJECT_ID secret is not set, Cannot deploy Supabase without it"
+
+            - if: ${{ !env.POSTMARK_WEBHOOK_USER }}
+              name: 📡 Missing postmark webhook password
+              run: echo "::warning::POSTMARK_WEBHOOK_USER secret is not set"
+
+            - if: ${{ !env.POSTMARK_WEBHOOK_PASSWORD }}
+              name: 📡 Missing postmark webhook password
+              run: echo "::warning::POSTMARK_WEBHOOK_PASSWORD secret is not set"
+
+            - if: ${{ !env.POSTMARK_WEBHOOK_AUTHORIZED_IPS }}
+              name: 📡 Missing postmark authorized ips
+              run: echo "::warning::POSTMARK_WEBHOOK_AUTHORIZED_IPS secret is not set"
